@@ -13,7 +13,7 @@
 
 void USART_Init(unsigned int);
 
-void USART_Transmit( unsigned char * data , int byteCount );
+void USART_Transmit( unsigned char * data , unsigned int byteCount );
 
 unsigned char USART_Receive( void );
 

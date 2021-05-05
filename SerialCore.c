@@ -21,7 +21,7 @@ void USART_Init( unsigned int ubrr){
 } // USART_Init
 
 
-void USART_Transmit( unsigned char * data , int byteCount ){
+void USART_Transmit( unsigned char * data , unsigned int byteCount ){
 	
 	for(int i = 0 ; i < byteCount; i++){
 		while ( !( UCSR0A & (1<<UDRE0)) );
