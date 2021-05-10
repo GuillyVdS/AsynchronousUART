@@ -12,11 +12,26 @@
 
 	#define DEBUG_SERIAL
 	//variable declaration
+	
+	//set default buffer size
+	#define SIZE_OF_BUFFER 100
 
-	extern unsigned char serialBuffer[100];
-	//extern unsigned int serialBufferLength = 0;
+
+	//set read buffer variables
+	extern unsigned char serialBuffer[SIZE_OF_BUFFER];
 	extern unsigned int bufferIndex;
-	extern unsigned char transmitBuffer[100];
+	
+	
+	
+	//transmit transmit buffer variables
+	extern unsigned char transmitBuffer[SIZE_OF_BUFFER];
+	extern unsigned int transmitBufferLength;
+	extern unsigned int transmitBufferRead;
+	extern unsigned int transmitBufferWrite;
+	
+	
+	
+	//old vars 
 	extern unsigned char transmitBufferindex;
 	extern unsigned char transmitBytesSent;
 
