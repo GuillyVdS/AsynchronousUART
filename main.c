@@ -15,10 +15,10 @@
 #define MYUBRR (F_CPU/16/BAUD-1)
 
 unsigned char charTest;
-char ack[] = "Received: ";
-char message[] = "Press key for input \n" ;
-unsigned char serialBuffer[100];
-unsigned int bufferIndex = 0;
+//unsigned char LED_On = "Turn LED on";
+//unsigned char LED_Off = "Turn LED off";
+//char ack[] = "Received: ";
+//char message[] = "TESTING \n" ;
 
 /*
 void transmitword(char * bufferInput, int byteCount)
@@ -28,34 +28,45 @@ void transmitword(char * bufferInput, int byteCount)
 */
 
 
-
+unsigned char testvR;
 int main(void)
 {
     /* Replace with your application code */
 	USART_Init ( MYUBRR );
-	USART_Transmit( (unsigned char *)message, (unsigned int)strlen( (const char *)message));
+	//USART_Transmit( (unsigned char *)message, (unsigned int)strlen( (const char *)message));
     while (1) 
     {
-		charTest = USART_Receive();
-		if(charTest != 0)
+		//runs function checking to see if any data is being sent 
+		USART_Receive();
+		
+		
+		if(serialBuffer[ (bufferIndex - 1) ] == 0x0D ) //0xDD
 		{	
-			USART_Transmit((unsigned char *)ack, strlen((const char *)ack));
-			USART_Transmit( &charTest, 1);
+			
+			USART_PassToTransmitBuffer(serialBuffer, bufferIndex); //sends 
+			memset(serialBuffer,0,bufferIndex);
+			bufferIndex = 0;
 		}
 		
-		//transmitword(serialBuffer, strlen(serialBuffer));
+		USART_Send(); //sends any available characters in transmit buffer
 		
-		
-		//USART_Transmit(serialBuffer, strlen(serialBuffer));
-
-		_delay_ms(2000);
     }
 }
-
 /*
--move all serial uart functionality into separate files SerialCore.c and Serialcore.h
--then create a function that you can pass a string - a const * char - that will print to command line
--then create a system that will listen to all sent characters from a serial terminal and wait for new line
+void checkForCommand(serialBuffer){
+	if()
+	
+	
+}
+*/
+/*
+-move all serial uart functionality into separate files SerialCore.c and Serialcore.h DONE
+-then create a function that you can pass a string - a const * char - that will print to command line DONE
+-then create a system that will listen to all sent characters from a serial terminal and wait for new line DONE
     then process them using strcmp against some commands
  */
+
+
+
+
 
