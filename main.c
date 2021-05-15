@@ -24,8 +24,8 @@ volatile uint8_t * ddrE = (volatile uint8_t *) (0x0D + 0x20);
 volatile uint8_t * portE = (volatile uint8_t *) (0x0E + 0x20);
 
 unsigned char charTest;
-const unsigned char LED_On[] = "Turn LED on";
-const unsigned char LED_Off[] = "Turn LED off";
+const char LED_On[] = "Turn LED on";
+const char LED_Off[] = "Turn LED off";
 //char ack[] = "Received: ";
 //char message[] = "TESTING \n" ;
 
@@ -53,7 +53,9 @@ void checkForCommand(unsigned char * inputbuffer){
 
 	}
 	else
-	{USART_PassToTransmitBuffer("error", 5);}
+	{
+		USART_PassToTransmitBuffer((unsigned char *)"error", 5);
+	}
 	
 	
 }
