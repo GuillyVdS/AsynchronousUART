@@ -36,7 +36,6 @@
 	extern unsigned char transmitBytesSent;
 
 	//function declaration
-
 	void USART_Init(unsigned int);
 
 	//void USART_Transmit( unsigned char * data , unsigned int byteCount );
