@@ -6,81 +6,52 @@
  */ 
 
 #include <avr/io.h>
-
 #include  "Serialcore.h"
 
-unsigned char serialBuffer[100] = {0};
-unsigned int bufferIndex = 0;
-unsigned char transmitBuffer[100] = {0};
-unsigned char transmitBufferindex = 0;
-unsigned char transmitBytesSent = 0;
-
-
-
+unsigned char serialBuffer[SIZE_OF_BUFFER] = {0};		//buffer 
+unsigned int bufferIndex = 0;				//index tracking track of cursor in the buffer
+unsigned char transmitBuffer[SIZE_OF_BUFFER] = {0};	//buffer for characters to transmit
+unsigned char transmitBufferindex = 0;		//index to keep track of cursor in the transmit buffer
+unsigned char transmitBytesSent = 0;		//second index to keep track of how many characters have been sent
 
 void USART_Init( unsigned int ubrr){
-	/* Set baud rate */
+	// Set baud rate 
 	UBRR0H = (unsigned char)(ubrr>>8);
 	UBRR0L = (unsigned char)ubrr;
-	/* Enable receiver and transmitter */
+	// Enable receiver and transmitter
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-	/* Set frame format: 8data, 2stop bit */
+	//Set frame format: 8data, 2stop bit
 	UCSR0C = (1<<USBS0)|(3<<UCSZ00);
-} // USART_Init
-
-/*
-void USART_Transmit( unsigned char * data , unsigned int byteCount ){
-	
-	for(int i = 0 ; i < byteCount; i++){
-		while ( !( UCSR0A & (1<<UDRE0)) );
-		// Put data into buffer, sends the data /
-		UDR0 = data[i];
-	}
-	
-}
-*/
-
-/*
-need a function which will constantly check if any characters need sending to usart transmit
-
-need a second function to actually push data to transmit buffer
-
-*/
+} 
 
 void USART_PassToTransmitBuffer(unsigned char * data, unsigned int byteCount){
 	for(int i = 0 ; i < byteCount; i++){
 		transmitBuffer[transmitBufferindex] = data[i];
 		transmitBufferindex++;
-	}
-	
-	
+	}	
 }
 
 void USART_Send(void){
 	//check if any characters remain to be send in transmitbuffer
 	if(transmitBufferindex != transmitBytesSent){
-		//check if uart transmit is available
+		//checks UART control and status register if transmit is available
 		if(UCSR0A & (1<<UDRE0)){
-		//Put data into buffer, sends data
+		//Put data into UART buffer, sends data , increments total bytes sent
 		UDR0 = transmitBuffer[transmitBytesSent];
 		transmitBytesSent++;	
 		}
 	}
 }
 
-
 void USART_Receive( void ){
-	/* Wait for data to be received */
+	/* Checks UART Control and status register for presence of any new bytes in the UART buffer*/
 	if ( UCSR0A & (1<<RXC0) ){
-		serialBuffer[bufferIndex] = UDR0;
-		
+		serialBuffer[bufferIndex] = UDR0; //adds data to the serial buffer at current space of index
+		/*
 		#ifdef DEBUG_SERIAL 
-			//UDR0 = serialBuffer[bufferIndex];
+			UDR0 = serialBuffer[bufferIndex];
 		#endif
-		
-		bufferIndex++;
-		//
-	/* Get and return received data from buffer */
-	//return UDR0;}
+		*/
+		bufferIndex++; //increments buffer index to next free space
 	}
 }
