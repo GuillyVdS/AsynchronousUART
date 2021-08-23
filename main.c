@@ -12,21 +12,30 @@
 #include <util/delay.h>
 
 #define BAUD 9600
+/*Function used to calculate Baud rate as specified by datasheet.
+F_CPU is defined within delay.h as frequency of processor in Hertz.*/
 #define MYUBRR (F_CPU / 16 / BAUD - 1)
-#define LED_BREADBOARD (1 << (5)) // breadboard port
+#define LED_BREADBOARD (1 << (5))
+#define RETURN_CHAR 0x0D
+
+/*This was me learning how to use volatiles instead of predefined BSP defines.
+0x20 is used as offset for memory addresses. See C datasheet "page 403
+atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf"*/
 
 volatile uint8_t* ddrE = (volatile uint8_t*)(0x0D + 0x20);
 volatile uint8_t* portE = (volatile uint8_t*)(0x0E + 0x20);
 
-unsigned char charTest;
 const char LED_On[] = "Turn LED on";
 const char LED_Off[] = "Turn LED off";
+const char Error_Message = "error";
 
-void
-checkForCommand(unsigned char* inputbuffer)
+/*Takes serialbuffer as input and compares against some predefined commands
+In this instance this program was set up to either turn an LED ON or OFF.
+If the command is succesful, it will get transmitted, else error gets transmitted */
+
+void checkForCommand(unsigned char* inputbuffer)
 {
   if (strncmp((const char*)inputbuffer, LED_On, strlen(LED_On)) == 0) {
-    // USART_PassToTransmitBuffer("mlem", 4);
     USART_PassToTransmitBuffer(serialBuffer, bufferIndex);
     *portE |= LED_BREADBOARD;
 
@@ -35,33 +44,33 @@ checkForCommand(unsigned char* inputbuffer)
     *portE &= ~(LED_BREADBOARD);
 
   } else {
-    USART_PassToTransmitBuffer((unsigned char*)"error", 5);
+    USART_PassToTransmitBuffer((unsigned char*)Error_Message, strlen(Error_Message));
   }
 }
 
-unsigned char testvR;
-int
-main(void)
+int main(void)
 {
   *ddrE |= LED_BREADBOARD;
-  USART_Init(MYUBRR);
-  while (1) {
-    // runs function checking to see if any data is being sent
-    USART_Receive();
+  USART_Init(MYUBRR); // Initialises uart using defined BAUD rate.
 
-    /* checks last entered character in serialbuffer (current bufferindex -1
+  /*While loop executes indefinitely. USART_Receive will return data when
+  information is entered into the com port. */
+  while (1) {
+
+    USART_Receive(); // Checking to see if any data is being sent
+
+    /*Checks last entered character in serialbuffer (current bufferindex -1
      because previous char) to see if escape character has been entered to
-     reset buffer*/
-    if (serialBuffer[(bufferIndex - 1)] == 0x0D) {
-      // USART_PassToTransmitBuffer(serialBuffer, bufferIndex); //sends
+     reset buffer.*/
+    if (serialBuffer[(bufferIndex - 1)] == RETURN_CHAR) {
       checkForCommand(serialBuffer);
       memset(serialBuffer, 0, bufferIndex);
       bufferIndex = 0;
     }
 
-    USART_Send(); // sends any available characters in transmit buffer
+    USART_Send(); // Sends any available characters in transmit buffer.
   }
 }
 
-/* will need to check bufferlength vs buffersize in order to reset and loop back
+/*Will need to check bufferlength vs buffersize in order to reset and loop back
  to beginning of buffer*/

@@ -22,15 +22,10 @@ typedef struct
 
 extern LED listOfLED[NUMBER_OF_LEDS];
 
-int
-setup_LED(volatile uint8_t*, int);
-void
-turn_LED_On(int);
-void
-turn_LED_Off(int);
-bool
-get_LED_State(int);
-void
-toggle_LED(int);
+int setup_LED(volatile uint8_t*, int);
+void turn_LED_On(int);
+void turn_LED_Off(int);
+bool get_LED_State(int);
+void toggle_LED(int);
 
 #endif /* LED_CONTROL_H_ */

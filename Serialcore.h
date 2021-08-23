@@ -5,47 +5,31 @@
  *  Author: Guillaume
  */
 
-
 #ifndef SERIALCORE_H_
 #define SERIALCORE_H_
 
+#define DEBUG_SERIAL
 
-	#define DEBUG_SERIAL
-	//variable declaration
+// Set default buffer size
+#define SIZE_OF_BUFFER 100
 
-	//set default buffer size
-	#define SIZE_OF_BUFFER 100
+// Set read buffer variables
+extern unsigned char serialBuffer[SIZE_OF_BUFFER];
+extern unsigned int bufferIndex;
 
+// Transmit buffer variables
+extern unsigned char transmitBuffer[SIZE_OF_BUFFER];
+extern unsigned int transmitBufferLength;
+extern unsigned char transmitBufferindex;
+extern unsigned char transmitBytesSent;
 
-	//set read buffer variables
-	extern unsigned char serialBuffer[SIZE_OF_BUFFER];
-	extern unsigned int bufferIndex;
+// Function declarations
+void USART_Init(unsigned int);
 
+void USART_Receive(void);
 
+void USART_PassToTransmitBuffer(unsigned char* data, unsigned int byteCount);
 
-	//transmit transmit buffer variables
-	extern unsigned char transmitBuffer[SIZE_OF_BUFFER];
-	extern unsigned int transmitBufferLength;
-	extern unsigned int transmitBufferRead;
-	extern unsigned int transmitBufferWrite;
-
-
-
-	//old vars
-	extern unsigned char transmitBufferindex;
-	extern unsigned char transmitBytesSent;
-
-	//function declaration
-	void USART_Init(unsigned int);
-
-	//void USART_Transmit( unsigned char * data , unsigned int byteCount );
-
-	void USART_Receive( void );
-
-	void USART_PassToTransmitBuffer(unsigned char * data, unsigned int byteCount);
-
-	void USART_Send(void);
-
-
+void USART_Send(void);
 
 #endif /* SERIALCORE_H_ */
